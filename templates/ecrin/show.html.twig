@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Écrin n°{{ ecrin.id }}{% endblock %}
+
+{% block body %}
+    <h1>{{ ecrin.nom }}</h1>
+
+    {# Utilise dump() uniquement pour le débogage #}
+    {% dump ecrin %}
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ ecrin.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ ecrin.nom }}</td>
+            </tr>
+            <tr>
+                <th>Pierres Précieuses</th>
+                <td>
+                    <ul>
+                        {% for pierre in ecrin.pierres %}
+                            <li>
+                                <a href="{{ path('pierre_show', {'id': pierre.id}) }}">{{ pierre.nom }}</a>
+                            </li>
+                        {% else %}
+                            <li>Aucune pierre précieuse trouvée.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <a href="{{ path('ecrin_list') }}">Retour à la liste</a>
+
+{% endblock %}

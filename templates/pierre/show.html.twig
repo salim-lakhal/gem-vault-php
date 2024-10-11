@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}pierre n°{{ pierre.id }}{% endblock %}
+
+{% block body %}
+    <h1>{{ pierre.nom }}</h1>
+
+       {% dump pierre %}
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ pierre.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ pierre.nom }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ pierre.description}}</td>
+            </tr>
+        </tbody>
+    </table>
+	<br>
+	<br>
+	<a href="{{ path('ecrin_show', {'id': pierre.ecrin.id}) }}">retourner à l'écrin</a>
+
+
+{% endblock %} {# body #} 
+{# ... #} 

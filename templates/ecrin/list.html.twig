@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des écrins de tous les membres{% endblock %}
+
+{% block body %}
+    {% dump ecrins %} {# Assurez-vous de retirer cela en production #}
+
+    <h1>Liste des gemmothèques de tous les membres :</h1>
+    
+    {% if ecrins is not empty %}
+        <ul>
+            {% for ecrin in ecrins %}
+                <li>
+                    <a href="{{ path('ecrin_show', {'id': ecrin.id}) }}">Écrin d'ID : {{ ecrin.id }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun écrin disponible.</p>
+    {% endif %}
+{% endblock %}

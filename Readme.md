@@ -1,11 +1,29 @@
-Une collection de pierres précieuses est généralement appelée un "écrin" ou une "gemmothèque", en fonction du contexte.
+- **Nom** : LAKHAL
+- **Prénom** : Salim
+- **Nom du projet** : myjoliespierres
 
-    Écrin : Ce terme désigne généralement un coffret ou un contenant, souvent luxueux, dans lequel sont conservés des bijoux ou des pierres précieuses. Il symbolise à la fois la collection elle-même et l'espace physique où elle est stockée.
+# Lexique du Projet
 
-    Gemmothèque : Plus technique, ce mot désigne spécifiquement une collection de gemmes (pierres précieuses). Utilisé principalement dans les domaines scientifiques, pédagogiques ou artistiques, une gemmothèque peut être utilisée pour la recherche, l'étude ou l'exposition.
+## Terminologie des Pierres Précieuses
 
-Passionnés de pierres précieuses :
+### Écrin
 
-    Gemmologues : Ce terme s'applique aux personnes qui étudient de façon professionnelle ou académique les pierres précieuses, leur composition, leur origine et leur qualité.
+Un "écrin" désigne un coffret ou un contenant, souvent luxueux, dans lequel sont conservés des bijoux ou des pierres précieuses. Il symbolise à la fois la collection elle-même et l'espace physique où elle est stockée.
 
-    Collectionneurs de pierres précieuses : Ce sont des passionnés qui accumulent des pierres pour le plaisir, la passion ou parfois en tant qu'investissement. Ils ne sont pas nécessairement des experts, mais leur intérêt réside dans la beauté et la rareté des pierres
+### Gemmothèque
+
+Le terme "gemmothèque" désigne spécifiquement une collection de gemmes (pierres précieuses). Utilisé principalement dans les domaines scientifiques, pédagogiques ou artistiques, une gemmothèque peut servir à la recherche, à l'étude ou à l'exposition des gemmes.
+
+## Passionnés de Pierres Précieuses
+
+### Gemmologues
+
+Les gemmologues sont des professionnels ou des universitaires qui étudient les pierres précieuses, leur composition, leur origine et leur qualité.
+
+### Collectionneurs de Pierres Précieuses
+
+Ce sont des passionnés qui accumulent des pierres pour le plaisir, la passion ou parfois en tant qu'investissement. Bien qu'ils ne soient pas nécessairement des experts, leur intérêt réside dans la beauté et la rareté des pierres.
+
+### Infos
+
+Tout marche bien normalement
