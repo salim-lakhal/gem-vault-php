@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pierre index{% endblock %}
+
+{% block body %}
+    <h1>Pierre index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>TypeDePierre</th>
+                <th>Poids</th>
+                <th>ValeurEstimee</th>
+                <th>DateAcquisition</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pierre in pierres %}
+            <tr>
+                <td>{{ pierre.id }}</td>
+                <td>{{ pierre.nom }}</td>
+                <td>{{ pierre.description }}</td>
+                <td>{{ pierre.typeDePierre }}</td>
+                <td>{{ pierre.poids }}</td>
+                <td>{{ pierre.valeurEstimee }}</td>
+                <td>{{ pierre.dateAcquisition ? pierre.dateAcquisition|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_pierre_show', {'id': pierre.id}) }}">show</a>
+                    <a href="{{ path('app_pierre_edit', {'id': pierre.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PierreRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Pierre
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -35,6 +37,17 @@ class Pierre
     #[ORM\ManyToOne(inversedBy: 'pierres')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Ecrin $ecrin = null;
+
+    /**
+     * @var Collection<int, GemGallery>
+     */
+    #[ORM\ManyToMany(targetEntity: GemGallery::class, mappedBy: 'pierres')]
+    private Collection $gemGalleries;
+
+    public function __construct()
+    {
+        $this->gemGalleries = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -121,6 +134,33 @@ class Pierre
     public function setEcrin(?Ecrin $ecrin): static
     {
         $this->ecrin = $ecrin;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GemGallery>
+     */
+    public function getGemGalleries(): Collection
+    {
+        return $this->gemGalleries;
+    }
+
+    public function addGemGallery(GemGallery $gemGallery): static
+    {
+        if (!$this->gemGalleries->contains($gemGallery)) {
+            $this->gemGalleries->add($gemGallery);
+            $gemGallery->addPierre($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGemGallery(GemGallery $gemGallery): static
+    {
+        if ($this->gemGalleries->removeElement($gemGallery)) {
+            $gemGallery->removePierre($this);
+        }
 
         return $this;
     }

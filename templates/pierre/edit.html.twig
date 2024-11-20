@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Pierre{% endblock %}
+
+{% block body %}
+    <h1>Edit Pierre</h1>
+
+    {{ include('pierre/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_pierre_index') }}">back to list</a>
+
+    {{ include('pierre/_delete_form.html.twig') }}
+{% endblock %}

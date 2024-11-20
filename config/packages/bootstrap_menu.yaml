@@ -1,0 +1,7 @@
+bootstrap_menu:
+  menus:
+    main:
+      items:
+        Ecrin:
+          label: 'Ecrin'
+          route: 'ecrin_list'

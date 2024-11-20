@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit GemGallery{% endblock %}
+
+{% block body %}
+    <h1>Edit GemGallery</h1>
+
+    {{ include('gem_gallery/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_gem_gallery_index') }}">back to list</a>
+
+    {{ include('gem_gallery/_delete_form.html.twig') }}
+{% endblock %}

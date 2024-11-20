@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Member Details{% endblock %}
+
+{% block body %}
+    <h1>{{ member.name }} - Galeries </h1>
+    <p>Email: {{ member.email }}</p>
+
+    {% if gem_galleries is not empty %}
+        <ul>
+            {% for gallery in gem_galleries %}
+                <li>
+                    <a href="{{ path('app_gem_gallery_show', {'id': gallery.id}) }}">
+                        {{ gallery.description }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune galerie n'est associée à ce membre.</p>
+    {% endif %}
+
+    <!-- Lien pour créer une nouvelle galerie pour ce membre -->
+    <a href="{{ path('app_gem_gallery_new', {'id': member.id}) }}" class="btn btn-success mt-3">Créer une nouvelle galerie</a>
+
+    <!-- Lien pour revenir à la liste des membres -->
+    <a href="{{ path('app_member') }}" class="btn btn-secondary mt-3">Retour à la liste des membres</a>
+{% endblock %}

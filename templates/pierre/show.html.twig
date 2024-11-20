@@ -1,11 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}pierre n°{{ pierre.id }}{% endblock %}
+{% block title %}Pierre{% endblock %}
 
 {% block body %}
-    <h1>{{ pierre.nom }}</h1>
-
-       {% dump pierre %}
+    <h1>Pierre</h1>
 
     <table class="table">
         <tbody>
@@ -19,14 +17,30 @@
             </tr>
             <tr>
                 <th>Description</th>
-                <td>{{ pierre.description}}</td>
+                <td>{{ pierre.description }}</td>
+            </tr>
+            <tr>
+                <th>TypeDePierre</th>
+                <td>{{ pierre.typeDePierre }}</td>
+            </tr>
+            <tr>
+                <th>Poids</th>
+                <td>{{ pierre.poids }}</td>
+            </tr>
+            <tr>
+                <th>ValeurEstimee</th>
+                <td>{{ pierre.valeurEstimee }}</td>
+            </tr>
+            <tr>
+                <th>DateAcquisition</th>
+                <td>{{ pierre.dateAcquisition ? pierre.dateAcquisition|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
         </tbody>
     </table>
-	<br>
-	<br>
-	<a href="{{ path('ecrin_show', {'id': pierre.ecrin.id}) }}">retourner à l'écrin</a>
 
+    <a href="{{ path('app_pierre_index') }}">back to list</a>
 
-{% endblock %} {# body #} 
-{# ... #} 
+    <a href="{{ path('app_pierre_edit', {'id': pierre.id}) }}">edit</a>
+
+    {{ include('pierre/_delete_form.html.twig') }}
+{% endblock %}

@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\EcrinRepository;
+use App\Repository\GemGalleryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: EcrinRepository::class)]
-class Ecrin
+#[ORM\Entity(repositoryClass: GemGalleryRepository::class)]
+class GemGallery
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
@@ -19,17 +18,20 @@ class Ecrin
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
+    #[ORM\Column]
+    private ?bool $isPublic = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateDeCreation = null;
+    #[ORM\Column(length: 255,nullable: true)]
+    private ?string $description = null;
 
     /**
      * @var Collection<int, Pierre>
      */
-    #[ORM\OneToMany(targetEntity: Pierre::class, mappedBy: 'ecrin', orphanRemoval: true)]
+    #[ORM\ManyToMany(targetEntity: Pierre::class, inversedBy: 'gemGalleries')]
     private Collection $pierres;
+
+    #[ORM\ManyToOne(inversedBy: 'gemGalleries')]
+    private ?Member $creator = null;
 
     public function __construct()
     {
@@ -53,26 +55,26 @@ class Ecrin
         return $this;
     }
 
+    public function isPublic(): ?bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(bool $isPublic): static
+    {
+        $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getDateDeCreation(): ?\DateTimeInterface
-    {
-        return $this->dateDeCreation;
-    }
-
-    public function setDateDeCreation(\DateTimeInterface $dateDeCreation): static
-    {
-        $this->dateDeCreation = $dateDeCreation;
 
         return $this;
     }
@@ -89,7 +91,6 @@ class Ecrin
     {
         if (!$this->pierres->contains($pierre)) {
             $this->pierres->add($pierre);
-            $pierre->setEcrin($this);
         }
 
         return $this;
@@ -97,12 +98,19 @@ class Ecrin
 
     public function removePierre(Pierre $pierre): static
     {
-        if ($this->pierres->removeElement($pierre)) {
-            // set the owning side to null (unless already changed)
-            if ($pierre->getEcrin() === $this) {
-                $pierre->setEcrin(null);
-            }
-        }
+        $this->pierres->removeElement($pierre);
+
+        return $this;
+    }
+
+    public function getCreator(): ?Member
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?Member $creator): static
+    {
+        $this->creator = $creator;
 
         return $this;
     }
