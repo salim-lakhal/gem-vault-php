@@ -24,6 +24,9 @@ class GemGallery
     #[ORM\Column(length: 255,nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(type: "boolean")]
+    private $published;
+
     /**
      * @var Collection<int, Pierre>
      */
@@ -36,6 +39,17 @@ class GemGallery
     public function __construct()
     {
         $this->pierres = new ArrayCollection();
+    }
+
+    public function getPublished(): bool
+    {
+        return $this->published;
+    }
+
+    public function setPublished(bool $published): self
+    {
+        $this->published = $published;
+        return $this;
     }
 
     public function getId(): ?int

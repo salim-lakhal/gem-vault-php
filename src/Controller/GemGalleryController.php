@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\GemGallery;
 use App\Entity\Pierre;
+use App\Entity\Member;
 use App\Form\GemGalleryType;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\GemGalleryRepository;
@@ -19,67 +20,79 @@ final class GemGalleryController extends AbstractController
     #[Route(name: 'app_gem_gallery_index', methods: ['GET'])]
     public function index(GemGalleryRepository $gemGalleryRepository): Response
     {
+        $gemGalleries = $gemGalleryRepository->findBy(['published' => true]);
         return $this->render('gem_gallery/index.html.twig', [
-            'gem_galleries' => $gemGalleryRepository->findAll(),
+            'gem_galleries' => $gemGalleries,
         ]);
     }
     
 
-    #[Route('/new', name: 'app_gem_gallery_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $gemGallery = new GemGallery();
-        $form = $this->createForm(GemGalleryType::class, $gemGallery);
-        $form->handleRequest($request);
+    #[Route('/gem-gallery/new/{memberId}', name: 'app_gem_gallery_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager, Member $member): Response
+{
+    $gemGallery = new GemGallery();
+    $gemGallery->setCreator($member);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($gemGallery);
-            $entityManager->flush();
+    $form = $this->createForm(GemGalleryType::class, $gemGallery);
+    $form->handleRequest($request);
 
-            return $this->redirectToRoute('app_gem_gallery_index', [], Response::HTTP_SEE_OTHER);
-        }
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($gemGallery);
+        $entityManager->flush();
 
-        return $this->render('gem_gallery/new.html.twig', [
-            'gem_gallery' => $gemGallery,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_member_show', ['id' => $member->getId()]);
     }
 
-    #[Route('/{id}', name: 'app_gem_gallery_show', methods: ['GET'])]
+    return $this->render('gem_gallery/new.html.twig', [
+        'gem_gallery' => $gemGallery,
+        'form' => $form->createView(),
+    ]);
+}
+
+    #[Route('/gem-gallery/{id}', name: 'app_gem_gallery_show', methods: ['GET'])]
     public function show(GemGallery $gemGallery): Response
     {
+        if (!$gemGallery) {
+            throw $this->createNotFoundException('La galerie n\'existe pas.');
+        }
+
         return $this->render('gem_gallery/show.html.twig', [
             'gem_gallery' => $gemGallery,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_gem_gallery_edit', methods: ['GET', 'POST'])]
+    #[Route('/gem-gallery/{id}/edit', name: 'app_gem_gallery_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, GemGallery $gemGallery, EntityManagerInterface $entityManager): Response
     {
+        // On récupère le membre lié à la galerie
+        $member = $gemGallery->getCreator();
+
         $form = $this->createForm(GemGalleryType::class, $gemGallery);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_gem_gallery_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_member_show', ['id' => $member->getId()]);
         }
 
         return $this->render('gem_gallery/edit.html.twig', [
             'gem_gallery' => $gemGallery,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}', name: 'app_gem_gallery_delete', methods: ['POST'])]
+    #[Route('/gem-gallery/{id}', name: 'app_gem_gallery_delete', methods: ['POST'])]
     public function delete(Request $request, GemGallery $gemGallery, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$gemGallery->getId(), $request->getPayload()->getString('_token'))) {
+        $memberId = $gemGallery->getCreator()->getId(); // Récupérer l'ID du membre
+
+        if ($this->isCsrfTokenValid('delete' . $gemGallery->getId(), $request->get('_token'))) {
             $entityManager->remove($gemGallery);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_gem_gallery_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_member_show', ['id' => $memberId]);
     }
 
     #[Route('/pierre/{id}', name: 'app_pierre_show', methods: ['GET'])]
