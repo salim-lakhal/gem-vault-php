@@ -3,14 +3,13 @@
 {% block title %}Member Details{% endblock %}
 
 {% block body %}
-    <h1>{{ member.name }} - Galeries </h1>
-    <p>Email: {{ member.email }}</p>
+    <h1>{{ member.email }} - Galeries </h1>
 
     {% if gem_galleries is not empty %}
         <ul>
             {% for gallery in gem_galleries %}
                 <li>
-                    <a href="{{ path('app_gem_gallery_show', {'id': gallery.id}) }}">
+                    <a href="{{ path('app_gem_gallery_show', {'id': gallery.id, 'memberId': member.id}) }}">
                         {{ gallery.description }}
                     </a>
                 </li>

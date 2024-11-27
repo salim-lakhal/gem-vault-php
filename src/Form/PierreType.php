@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Ecrin;
 use App\Entity\GemGallery;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 use App\Entity\Pierre;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -19,6 +20,11 @@ class PierreType extends AbstractType
             ->add('description')
             ->add('typeDePierre')
             ->add('poids')
+            ->add('imageFile', VichImageType::class, [
+                'required' => false,
+                'allow_delete' => true,
+                'download_link' => false,
+            ])
             ->add('valeurEstimee')
             ->add('dateAcquisition', null, [
                 'widget' => 'single_text',

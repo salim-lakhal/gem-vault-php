@@ -19,8 +19,9 @@
                 <td>{{ gem_gallery.id }}</td>
                 <td>{{ gem_gallery.description }}</td>
                 <td>
-                    <a href="{{ path('app_gem_gallery_show', {'id': gem_gallery.id}) }}">show</a>
-                    <a href="{{ path('app_gem_gallery_edit', {'id': gem_gallery.id}) }}">edit</a>
+                    <a href="{{ path('app_gem_gallery_show', {'id': gem_gallery.id, 'memberId': member.id }) }}">show</a>
+                    <a href="{{ path('app_gem_gallery_edit', {'id': gem_gallery.id, 'memberId': member.id }) }}">edit</a>
+
                 </td>
             </tr>
         {% else %}
@@ -31,5 +32,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_gem_gallery_new') }}">Create new</a>
+<a href="{{ path('app_gem_gallery_new', { 'memberId': member.id }) }}">Create new</a>
 {% endblock %}

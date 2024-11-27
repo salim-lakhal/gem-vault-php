@@ -63,6 +63,10 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+    public function __toString(): string
+{
+    return $this->email ?? 'Unknown Member';
+}
 
     /**
      * A visual identifier that represents this user.

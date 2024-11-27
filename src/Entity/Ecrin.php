@@ -25,6 +25,22 @@ class Ecrin
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateDeCreation = null;
 
+    #[ORM\ManyToOne(targetEntity: Member::class)]
+    #[ORM\JoinColumn(nullable: true)] 
+    private ?Member $member = null;
+
+    public function getMember(): ?Member
+    {
+        return $this->member;
+    }
+
+    public function setMember(?Member $member): static
+    {
+        $this->member = $member;
+
+        return $this;
+    }
+
     /**
      * @var Collection<int, Pierre>
      */

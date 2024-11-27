@@ -15,16 +15,16 @@ class GemGallery
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[ORM\Column]
-    private ?bool $isPublic = null;
+    #[ORM\Column(type: "boolean", nullable: true)]
+    private ?bool $isPublic = true;
 
     #[ORM\Column(length: 255,nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: "boolean")]
+    #[ORM\Column(type: "boolean", nullable: true)]
     private $published;
 
     /**

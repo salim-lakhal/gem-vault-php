@@ -7,7 +7,7 @@
     <ul>
         {% for member in members %}
             <li>
-                <a href="{{ path('app_member_show', {'id': member.id}) }}">{{ member.name }}</a>
+                <a href="{{ path('app_member_show', {'id': member.id}) }}">{{ member.email }}</a>
             </li>
         {% endfor %}
     </ul>

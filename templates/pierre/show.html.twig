@@ -15,6 +15,16 @@
                 <th>Nom</th>
                 <td>{{ pierre.nom }}</td>
             </tr>
+           <tr>
+                <th>Photo</th>
+                <td>
+                {% if pierre.imageName %}
+                    <img src="{{ vich_uploader_asset(pierre, 'imageFile') }}" alt="photo de la pierre" />
+                {% else %}
+                <p>pas de photo</p>
+                {% endif %}
+                </td>
+            </tr>
             <tr>
                 <th>Description</th>
                 <td>{{ pierre.description }}</td>

@@ -23,41 +23,49 @@ final class GemGalleryController extends AbstractController
         $gemGalleries = $gemGalleryRepository->findBy(['published' => true]);
         return $this->render('gem_gallery/index.html.twig', [
             'gem_galleries' => $gemGalleries,
+            'member' => $this->getUser(),
         ]);
     }
     
 
     #[Route('/gem-gallery/new/{memberId}', name: 'app_gem_gallery_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager, Member $member): Response
-{
-    $gemGallery = new GemGallery();
-    $gemGallery->setCreator($member);
-
-    $form = $this->createForm(GemGalleryType::class, $gemGallery);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->persist($gemGallery);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_member_show', ['id' => $member->getId()]);
+    public function new(Request $request, EntityManagerInterface $entityManager, int $memberId): Response
+    {
+        // Récupérer le membre manuellement
+        $member = $entityManager->getRepository(Member::class)->find($memberId);
+    
+        if (!$member) {
+            throw $this->createNotFoundException('Member not found');
+        }
+    
+        $gemGallery = new GemGallery();
+        $gemGallery->setCreator($member);
+    
+        $form = $this->createForm(GemGalleryType::class, $gemGallery);
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($gemGallery);
+            $entityManager->flush();
+    
+            return $this->redirectToRoute('app_gem_gallery_show', ['id' => $member->getId(), 'memberID' => $member->getId()]);
+        }
+    
+        return $this->render('gem_gallery/new.html.twig', [
+            'gem_gallery' => $gemGallery,
+            'form' => $form->createView(),
+        ]);
     }
 
-    return $this->render('gem_gallery/new.html.twig', [
-        'gem_gallery' => $gemGallery,
-        'form' => $form->createView(),
-    ]);
-}
-
-    #[Route('/gem-gallery/{id}', name: 'app_gem_gallery_show', methods: ['GET'])]
-    public function show(GemGallery $gemGallery): Response
+// Afficher un membre spécifique
+    #[Route('/gem-gallery/{memberID}', name: 'app_gem_gallery_show', methods: ['GET'])]    
+    public function show(int $id, int $memberID, Member $member, GemGalleryRepository $gemGalleryRepository): Response
     {
-        if (!$gemGallery) {
-            throw $this->createNotFoundException('La galerie n\'existe pas.');
-        }
-
-        return $this->render('gem_gallery/show.html.twig', [
-            'gem_gallery' => $gemGallery,
+        // Récupérer les galeries du membre
+        $gemGalleries = $gemGalleryRepository->findBy(['creator' => $member]);
+        return $this->render('member/show.html.twig', [
+            'member' => $member,
+            'gem_galleries' => $gemGalleries, // Passer les galeries associées au membre
         ]);
     }
 
