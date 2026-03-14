@@ -2,9 +2,9 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Ecrin;
-use App\Entity\Pierre;
-use App\Entity\GemGallery;
+use App\Entity\Gallery;
+use App\Entity\GemCollection;
+use App\Entity\Gemstone;
 use App\Entity\Member;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -12,115 +12,111 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private UserPasswordHasherInterface $hasher;
-
-    public function __construct(UserPasswordHasherInterface $hasher)
-    {
-        $this->hasher = $hasher;
+    public function __construct(
+        private UserPasswordHasherInterface $hasher
+    ) {
     }
 
     public function load(ObjectManager $manager): void
     {
-        $this->loadMembers($manager);
-        $this->loadEcrinsAndPierres($manager);
-        $this->loadGemGalleries($manager);
-    }
+        $admin = $this->createMember($manager, 'admin@gemvault.dev', 'admin123', ['ROLE_ADMIN'], 'admin');
+        $collector = $this->createMember($manager, 'collector@gemvault.dev', 'collector123', ['ROLE_USER'], 'collector');
+        $gemologist = $this->createMember($manager, 'gemologist@gemvault.dev', 'gemologist123', ['ROLE_USER'], 'gemologist');
 
-    private function loadMembers(ObjectManager $manager)
-    {
-        foreach ($this->membersGenerator() as [$email, $plainPassword]) {
-            $member = new Member();
-            $password = $this->hasher->hashPassword($member, $plainPassword);
-            $member->setEmail($email);
-            $member->setPassword($password);
+        $premiumCollection = $this->createCollection($manager, 'Premium Collection', 'Curated selection of the finest gemstones', $admin);
+        $vintageStones = $this->createCollection($manager, 'Vintage Stones', 'Classic gemstones from historical mines', $collector);
+        $researchSpecimens = $this->createCollection($manager, 'Research Specimens', 'Gemstones for gemological study and analysis', $gemologist);
 
-            $manager->persist($member);
+        $diamond = $this->createGemstone($manager, $premiumCollection, 'Diamond', 'Precious', 1.5, 15000, 'White', 'South Africa', 'Rare', 'A brilliant-cut diamond with exceptional clarity', new \DateTime('2024-01-15'));
+        $ruby = $this->createGemstone($manager, $premiumCollection, 'Ruby', 'Precious', 2.1, 8000, 'Red', 'Myanmar', 'Rare', 'Deep pigeon blood ruby with natural fluorescence', new \DateTime('2024-01-20'));
+        $sapphire = $this->createGemstone($manager, $premiumCollection, 'Sapphire', 'Precious', 1.8, 6500, 'Blue', 'Sri Lanka', 'Uncommon', 'Ceylon sapphire with vivid cornflower blue', new \DateTime('2024-02-01'));
 
-            // Stocker la référence pour associer plus tard
-            $this->addReference('member_' . $email, $member);
-        }
+        $emerald = $this->createGemstone($manager, $vintageStones, 'Emerald', 'Precious', 3.2, 12000, 'Green', 'Colombia', 'Very Rare', 'Colombian emerald with characteristic jardin inclusions', new \DateTime('2024-02-10'));
+        $amethyst = $this->createGemstone($manager, $vintageStones, 'Amethyst', 'Semi-precious', 5.0, 200, 'Purple', 'Brazil', 'Common', 'Deep purple amethyst with excellent saturation', new \DateTime('2024-02-15'));
+        $topaz = $this->createGemstone($manager, $vintageStones, 'Topaz', 'Semi-precious', 4.5, 350, 'Yellow', 'Brazil', 'Common', 'Imperial topaz with warm golden hue', new \DateTime('2024-03-01'));
+
+        $alexandrite = $this->createGemstone($manager, $researchSpecimens, 'Alexandrite', 'Precious', 0.8, 25000, 'Green/Red', 'Russia', 'Legendary', 'Color-change alexandrite showing green to red shift', new \DateTime('2024-03-10'));
+        $tanzanite = $this->createGemstone($manager, $researchSpecimens, 'Tanzanite', 'Semi-precious', 2.5, 3000, 'Violet', 'Tanzania', 'Very Rare', 'Trichroic tanzanite from Merelani Hills', new \DateTime('2024-03-15'));
+        $opal = $this->createGemstone($manager, $researchSpecimens, 'Opal', 'Semi-precious', 3.0, 1500, 'Multi', 'Australia', 'Uncommon', 'Black opal with vibrant play-of-color', new \DateTime('2024-03-20'));
+
+        $this->createGallery($manager, 'Precious Gems Showcase', $admin, true, true, [$diamond, $ruby, $sapphire, $emerald]);
+        $this->createGallery($manager, "Collector's Private Reserve", $collector, false, true, [$amethyst, $topaz, $emerald]);
+        $this->createGallery($manager, 'Rare Specimens', $gemologist, true, true, [$alexandrite, $tanzanite, $opal]);
+
         $manager->flush();
     }
 
-    private function loadEcrinsAndPierres(ObjectManager $manager)
+    private function createMember(ObjectManager $manager, string $email, string $plainPassword, array $roles, string $username): Member
     {
-        $ecrinNames = ['Écrin de luxe', 'Écrin vintage'];
-        foreach ($ecrinNames as $key => $name) {
-            $ecrin = new Ecrin();
-            $ecrin->setNom($name);
-            $ecrin->setDateDeCreation(new \DateTime());
+        $member = new Member();
+        $member->setEmail($email);
+        $member->setRoles($roles);
+        $member->setUsername($username);
+        $member->setPassword($this->hasher->hashPassword($member, $plainPassword));
+        $manager->persist($member);
 
-            $manager->persist($ecrin);
-            $this->addReference('ecrin_' . $key, $ecrin);
-
-            // Ajouter des pierres associées
-            $this->addPierresToEcrin($manager, $ecrin, $key);
-        }
-        $manager->flush();
+        return $member;
     }
 
-    private function addPierresToEcrin(ObjectManager $manager, Ecrin $ecrin, int $index)
+    private function createCollection(ObjectManager $manager, string $name, string $description, Member $owner): GemCollection
     {
-        $pierresData = [
-            [
-                ['Diamant', 'Un magnifique diamant de 1 carat.', 'Précieuse', 1.0],
-                ['Rubis', 'Un rubis rouge éclatant.', 'Précieuse', 0.5],
-            ],
-            [
-                ['Saphir', 'Un saphir bleu profond.', 'Précieuse', 0.8],
-                ['Émeraude', 'Une émeraude verte de qualité supérieure.', 'Précieuse', 0.7],
-            ],
-        ];
+        $collection = new GemCollection();
+        $collection->setName($name);
+        $collection->setDescription($description);
+        $collection->setOwner($owner);
+        $collection->setCreatedAt(new \DateTime('2024-01-01'));
+        $owner->setCollection($collection);
+        $manager->persist($collection);
 
-        foreach ($pierresData[$index] as [$nom, $description, $type, $poids]) {
-            $pierre = new Pierre();
-            $pierre->setNom($nom)
-                   ->setDescription($description)
-                   ->setTypeDePierre($type)
-                   ->setPoids($poids)
-                   ->setDateAcquisition(new \DateTime())
-                   ->setEcrin($ecrin);
-
-            $manager->persist($pierre);
-            $this->addReference('pierre_' . $nom, $pierre);
-        }
+        return $collection;
     }
 
-    private function loadGemGalleries(ObjectManager $manager)
-    {
-        $galleryNames = ['Galerie publique 1', 'Galerie privée 2'];
-        foreach ($galleryNames as $key => $name) {
-            $gallery = new GemGallery();
-            $gallery->setNom($name);
-            $gallery->setIsPublic($key % 2 === 0); // Alternance public/privé
+    private function createGemstone(
+        ObjectManager $manager,
+        GemCollection $collection,
+        string $name,
+        string $type,
+        float $weight,
+        float $value,
+        string $color,
+        string $origin,
+        string $rarity,
+        string $description,
+        \DateTime $acquisitionDate
+    ): Gemstone {
+        $gemstone = new Gemstone();
+        $gemstone->setName($name);
+        $gemstone->setType($type);
+        $gemstone->setWeight($weight);
+        $gemstone->setEstimatedValue($value);
+        $gemstone->setColor($color);
+        $gemstone->setOrigin($origin);
+        $gemstone->setRarity($rarity);
+        $gemstone->setDescription($description);
+        $gemstone->setAcquisitionDate($acquisitionDate);
+        $gemstone->setCollection($collection);
+        $manager->persist($gemstone);
 
-            // Associer à un membre
-            $memberReference = 'member_' . ($key === 0 ? 'olivier@localhost' : 'slash@localhost');
-            $gallery->setCreator($this->getReference($memberReference));
-
-            $manager->persist($gallery);
-            $this->addReference('gallery_' . $key, $gallery);
-
-            // Associer des pierres à la galerie
-            $this->addPierresToGallery($manager, $gallery);
-        }
-        $manager->flush();
+        return $gemstone;
     }
 
-    private function addPierresToGallery(ObjectManager $manager, GemGallery $gallery)
+    /**
+     * @param Gemstone[] $gemstones
+     */
+    private function createGallery(ObjectManager $manager, string $name, Member $creator, bool $isPublic, bool $published, array $gemstones): Gallery
     {
-        $pierres = ['Diamant', 'Rubis', 'Saphir', 'Émeraude'];
-        foreach ($pierres as $pierreNom) {
-            /** @var Pierre $pierre */
-            $pierre = $this->getReference('pierre_' . $pierreNom);
-            $gallery->addPierre($pierre);
-        }
-    }
+        $gallery = new Gallery();
+        $gallery->setName($name);
+        $gallery->setCreator($creator);
+        $gallery->setIsPublic($isPublic);
+        $gallery->setPublished($published);
 
-    private function membersGenerator(): \Generator
-    {
-        yield ['olivier@localhost', '123456'];
-        yield ['slash@localhost', '123456'];
+        foreach ($gemstones as $gemstone) {
+            $gallery->addGemstone($gemstone);
+        }
+
+        $manager->persist($gallery);
+
+        return $gallery;
     }
 }
-

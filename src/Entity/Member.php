@@ -14,37 +14,38 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class Member implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
-    /**
-     * @var list<string> The user roles
-     */
+    /** @var list<string> */
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Ecrin $relation = null;
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $username = null;
 
-    /**
-     * @var Collection<int, GemGallery>
-     */
-    #[ORM\OneToMany(targetEntity: GemGallery::class, mappedBy: 'Creator')]
-    private Collection $gemGalleries;
+    #[ORM\OneToOne(targetEntity: GemCollection::class, cascade: ['persist', 'remove'])]
+    private ?GemCollection $collection = null;
+
+    /** @var Collection<int, Gallery> */
+    #[ORM\OneToMany(targetEntity: Gallery::class, mappedBy: 'creator')]
+    private Collection $galleries;
 
     public function __construct()
     {
-        $this->gemGalleries = new ArrayCollection();
+        $this->galleries = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->email ?? 'Unknown Member';
     }
 
     public function getId(): ?int
@@ -60,51 +61,30 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
-    public function __toString(): string
-{
-    return $this->email ?? 'Unknown Member';
-}
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     *
-     * @return list<string>
-     */
+    /** @return list<string> */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
+    /** @param list<string> $roles */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -113,58 +93,57 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
+    public function getUsername(): ?string
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        return $this->username;
     }
 
-    public function getRelation(): ?Ecrin
+    public function setUsername(?string $username): static
     {
-        return $this->relation;
-    }
-
-    public function setRelation(?Ecrin $relation): static
-    {
-        $this->relation = $relation;
-
+        $this->username = $username;
         return $this;
     }
 
-    /**
-     * @return Collection<int, GemGallery>
-     */
-    public function getGemGalleries(): Collection
+    public function getCollection(): ?GemCollection
     {
-        return $this->gemGalleries;
+        return $this->collection;
     }
 
-    public function addGemGallery(GemGallery $gemGallery): static
+    public function setCollection(?GemCollection $collection): static
     {
-        if (!$this->gemGalleries->contains($gemGallery)) {
-            $this->gemGalleries->add($gemGallery);
-            $gemGallery->setCreator($this);
+        $this->collection = $collection;
+        return $this;
+    }
+
+    /** @return Collection<int, Gallery> */
+    public function getGalleries(): Collection
+    {
+        return $this->galleries;
+    }
+
+    public function addGallery(Gallery $gallery): static
+    {
+        if (!$this->galleries->contains($gallery)) {
+            $this->galleries->add($gallery);
+            $gallery->setCreator($this);
         }
-
         return $this;
     }
 
-    public function removeGemGallery(GemGallery $gemGallery): static
+    public function removeGallery(Gallery $gallery): static
     {
-        if ($this->gemGalleries->removeElement($gemGallery)) {
-            // set the owning side to null (unless already changed)
-            if ($gemGallery->getCreator() === $this) {
-                $gemGallery->setCreator(null);
+        if ($this->galleries->removeElement($gallery)) {
+            if ($gallery->getCreator() === $this) {
+                $gallery->setCreator(null);
             }
         }
-
         return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
     }
 }

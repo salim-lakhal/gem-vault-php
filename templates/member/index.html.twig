@@ -1,14 +1,45 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}List of Members{% endblock %}
+{% block title %}Members - Gem Vault{% endblock %}
 
 {% block body %}
-    <h1>List of Members</h1>
-    <ul>
-        {% for member in members %}
-            <li>
-                <a href="{{ path('app_member_show', {'id': member.id}) }}">{{ member.email }}</a>
-            </li>
-        {% endfor %}
-    </ul>
+    <h1 class="mb-4"><i class="bi bi-people me-2"></i>Members</h1>
+
+    {% if members|length > 0 %}
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Galleries</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                            <tr>
+                                <td>{{ member.email }}</td>
+                                <td>{{ member.username|default('-') }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ member.galleries|length }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_member_show', {id: member.id}) }}" class="btn btn-sm btn-outline-primary">
+                                        View Profile
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-people display-1 text-muted"></i>
+            <p class="text-muted mt-3">No members found.</p>
+        </div>
+    {% endif %}
 {% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ collection.name }} - Gem Vault{% endblock %}
+
+{% block body %}
+    <div class="mb-4">
+        <a href="{{ path('app_collection_index') }}" class="text-decoration-none">
+            <i class="bi bi-arrow-left me-1"></i>Back to collections
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h1 class="mb-2">{{ collection.name }}</h1>
+            {% if collection.description %}
+                <p class="lead text-muted">{{ collection.description }}</p>
+            {% endif %}
+            <div class="row mt-3">
+                <div class="col-auto">
+                    <span class="text-muted">
+                        <i class="bi bi-calendar me-1"></i>Created {{ collection.createdAt|date('F j, Y') }}
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span class="text-muted">
+                        <i class="bi bi-person me-1"></i>{{ collection.owner.email|default('Unknown') }}
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-secondary">
+                        <i class="bi bi-gem me-1"></i>{{ collection.gemstones|length }} gemstone{{ collection.gemstones|length != 1 ? 's' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Gemstones in this Collection</h4>
+
+    {% if collection.gemstones|length > 0 %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for gemstone in collection.gemstones %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if gemstone.imageName %}
+                            <img src="{{ vich_uploader_asset(gemstone, 'imageFile') }}" class="card-img-top" alt="{{ gemstone.name }}" style="height: 180px; object-fit: cover;">
+                        {% else %}
+                            <div class="gem-placeholder card-img-top" style="min-height: 150px; font-size: 2rem;">
+                                <i class="bi bi-gem"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title">{{ gemstone.name }}</h6>
+                            <div class="d-flex justify-content-between">
+                                <span class="badge bg-info text-dark">{{ gemstone.type }}</span>
+                                <small class="text-muted">{{ gemstone.weight }} ct</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pb-3">
+                            <a href="{{ path('app_gemstone_show', {id: gemstone.id}) }}" class="btn btn-sm btn-outline-primary w-100">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-gem display-4 text-muted"></i>
+            <p class="text-muted mt-3">No gemstones in this collection yet.</p>
+        </div>
+    {% endif %}
+{% endblock %}

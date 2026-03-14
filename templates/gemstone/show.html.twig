@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ gemstone.name }} - Gem Vault{% endblock %}
+
+{% block body %}
+    <div class="mb-4">
+        <a href="{{ path('app_gemstone_index') }}" class="text-decoration-none">
+            <i class="bi bi-arrow-left me-1"></i>Back to list
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5 mb-4">
+            <div class="card overflow-hidden">
+                {% if gemstone.imageName %}
+                    <img src="{{ vich_uploader_asset(gemstone, 'imageFile') }}" class="img-fluid" alt="{{ gemstone.name }}" style="width: 100%; max-height: 450px; object-fit: cover;">
+                {% else %}
+                    <div class="gem-placeholder" style="min-height: 350px;">
+                        <i class="bi bi-gem" style="font-size: 5rem;"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <h1 class="mb-3">{{ gemstone.name }}</h1>
+
+            {% if gemstone.description %}
+                <p class="lead text-muted mb-4">{{ gemstone.description }}</p>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Details</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="ps-3" style="width: 35%;">Type</th>
+                                <td><span class="badge bg-info text-dark">{{ gemstone.type }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="ps-3">Weight</th>
+                                <td>{{ gemstone.weight }} ct</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-3">Estimated Value</th>
+                                <td>${{ gemstone.estimatedValue|number_format(2) }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-3">Color</th>
+                                <td>{{ gemstone.color }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-3">Origin</th>
+                                <td>{{ gemstone.origin|default('Unknown') }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-3">Rarity</th>
+                                <td><span class="badge badge-rarity bg-warning text-dark">{{ gemstone.rarity }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="ps-3">Acquisition Date</th>
+                                <td>{{ gemstone.acquisitionDate ? gemstone.acquisitionDate|date('F j, Y') : 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-3">Collection</th>
+                                <td>
+                                    {% if gemstone.collection %}
+                                        <a href="{{ path('app_collection_show', {id: gemstone.collection.id}) }}">
+                                            {{ gemstone.collection.name }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">None</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if app.user %}
+                <div class="mt-4 d-flex gap-2">
+                    <a href="{{ path('app_gemstone_edit', {id: gemstone.id}) }}" class="btn btn-warning">
+                        <i class="bi bi-pencil me-1"></i>Edit
+                    </a>
+                    {{ include('gemstone/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
