@@ -163,14 +163,12 @@ php -S localhost:8000 -t public/
 ```
 gem-vault-php/
 ├── config/             # Symfony configuration (routes, services, packages)
-├── migrations/         # Doctrine database migrations
 ├── public/             # Web root (index.php, uploaded assets)
 ├── src/
 │   ├── Controller/     # HTTP controllers and API endpoints
 │   ├── Entity/         # Doctrine ORM entities
 │   ├── Form/           # Symfony form types
 │   ├── Repository/     # Doctrine repositories with custom queries
-│   ├── Security/       # Authentication and authorization logic
 │   └── DataFixtures/   # Demo data fixtures
 ├── templates/          # Twig templates
 ├── tests/              # PHPUnit test suites
